@@ -1,0 +1,56 @@
+---
+title: "getting and cleaning data"
+author: "Roel Hogervorst MSc"
+date: "Sunday, March 08, 2015"
+output: html_document
+---
+bijgevoegd:alle slides per week.
+#week 1.Openen van data
+
+
+Feitelijk wil Jeffrey T leek dat je een getting and cleaning data script maakt dat start en doorloopt van raw data naar clean data. En elke keer opnieuw moet dat hetzeflde lopen.
+
+handig scriptje voor herhaaldelijk doorlopen van hele script. Vaak wil je niet elke keer opnieuw directories maken.
+Daarom dit scriptje.
+```{r create directory if not yet exists}
+if (!file.exists("data")) {
+        dir.create("data")
+        }
+```
+Voor het downloaden van bestanden gebruik download.file() met belangrijke argumenten url, destfile, method
+download.file interesseert het niet wat het download. het download wat je wilt.
+```{r download file spec voor opdracht week 1}
+#eerst de link opslaan,dan downloaden via link, vervolgens downloaddatum opslaan voor later.
+fileUrl<-"https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2Fss06hid.csv"
+download.file(fileUrl, destfile="./data/microdatasurvey.csv") #in windows geen method curl gebruiken.
+#ook codebook downloaden.
+download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FPUMSDataDict06.pdf", destfile="./data/codebook.pdf") #dit werkt niet.
+dataDownloaded<-date()
+
+```
+dan openen als dataframe. read.table() of gerelateerd: read.csv() of read.csv2() belangrijke paramaters: file, header, sep, row.names, nrows.
+```{r openen van local file}
+microdata<-read.csv("./data/microdatasurvey.csv")
+```
+How many properties are worth $1,000,000 or more? 
+Hiervoor gebruik ik de VAL variabele. dat is nr 14 of meer. eerst checken welke waarden die variabele aanneemt.
+dat is fout, want ik heb nu 100.000 of meer. juiste nummer is 24. 
+```{r opdrachten week 1 over microdata}
+unique(microdata$VAL)
+sum(microdata$VAL >14, na.rm=T) #deze is fout
+sum(microdata$VAL >=24, na.rm=T) # deze is goed.
+```
+volgende opdracht: download excel sheet.
+```{r downloaden van excelfile}
+xlUrl<-"https://d396qusza40orc.cloudfront.net/getdata%2Fdata%2FDATA.gov_NGAP.xlsx"
+download.file(xlUrl, destfile="./data/NGAP.xlsx")
+```
+extracting data from excel files.
+
+
+```{r opening excel files}
+library(xlsx)
+#rijen 18-23 en kollommen 7-15
+colIndex<-18:23
+rowIndex<-1:4
+dat<-read.xlsx("./data/NGAP.xlsx",sheetIndex=1, colIndex=colIndex, rowIndex=rowIndex)
