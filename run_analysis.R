@@ -1,17 +1,18 @@
 run_analysis<-function() {
-       
+       library(data.table)
+        ##zet alles om in fread en dan rbindlist
 #      1.  Merges the training and the test sets to create one data set.
 #   load all parts of the testset
-        testParticipant <- read.table("data/test/subject_test.txt")
-        testX <- read.table("data/test/X_test.txt")
-        testY <- read.table("data/test/y_test.txt")
+        testParticipant <- fread("data/test/subject_test.txt")
+        testX <- fread("data/test/X_test.txt")
+        testY <- fread("data/test/y_test.txt")
 #       load parts of the trainingset
-        trainParticipant <- read.table("data/train/subject_train.txt")
-        trainX <- read.table("data/train/X_train.txt")
-        trainY <- read.table("data/train/y_train.txt")
+        trainParticipant <- fread("data/train/subject_train.txt")
+        trainX <- fread("data/train/X_train.txt")
+        trainY <- fread("data/train/y_train.txt")
 #       load the features
-        features <- read.table("data/features.txt")
-        activityLabels <- read.table("data/activity_labels.txt")
+        features <- fread("data/features.txt")
+        activityLabels <- fread("data/activity_labels.txt")
         
         Participants <- rbind(testParticipant, trainParticipant)
         colnames(Participants) <- "Participants"
@@ -21,13 +22,15 @@ run_analysis<-function() {
         
         data <- rbind(testX, trainX)
         colnames(data) <- features[, 2]
-        
 # Merge all three datasets
         data <- cbind(Participants, label, data)
+        data <- data.table(data)        
         
-        
-#       2. Extracts only the measurements on the mean and standard deviation for each measurement. 
-        
+#       2. Extracts only the measurements on the mean 
+        #and standard deviation for each measurement. 
+        library(dplyr)
+
+        dt <- select(data, matches("mean|std"))        
 #       3. Uses descriptive activity names to name the activities in the data set
 #       4. Appropriately labels the data set with descriptive variable names. 
 #        
