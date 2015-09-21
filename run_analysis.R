@@ -1,16 +1,16 @@
 run_analysis<-function() {
 #      1.  Merges the training and the test sets to create one data set.
 #   load all parts of the testset
-        testParticipant <- read.table("data/test/subject_test.txt")
-        testX <- read.table("data/test/X_test.txt")
-        testY <- read.table("data/test/y_test.txt")
+        testParticipant <- read.table("test/subject_test.txt")
+        testX <- read.table("test/X_test.txt")
+        testY <- read.table("test/y_test.txt")
 #load parts of the trainingset
-        trainParticipant <- read.table("data/train/subject_train.txt")
-        trainX <- read.table("data/train/X_train.txt")
-        trainY <- read.table("data/train/y_train.txt")
+        trainParticipant <- read.table("train/subject_train.txt")
+        trainX <- read.table("train/X_train.txt")
+        trainY <- read.table("train/y_train.txt")
 #load the features
-        features <- read.table("data/features.txt")
-        activityLabels <- read.table("data/activity_labels.txt")
+        features <- read.table("features.txt")
+        activityLabels <- read.table("activity_labels.txt")
 #combine the participantsets.
         Participants <- rbind(testParticipant, trainParticipant)
         colnames(Participants) <- "Participants"
@@ -23,7 +23,8 @@ run_analysis<-function() {
 # Merge all three datasets
         data <- cbind(Participants, label, data)
         library(data.table)
-        data <- data.table(data)        #for reasons that I cannot find out, the next steps only work if I use a data.table frame
+        data <- data.table(data)        
+#for reasons that I cannot find out, the next steps only work if I use a data.table frame
 rm(activityLabels,features,Participants, label,
            testParticipant,testX,testY,trainParticipant,
            trainX,trainY) #cleaning up the environment.
