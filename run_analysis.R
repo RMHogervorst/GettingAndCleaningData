@@ -4,33 +4,34 @@ run_analysis<-function() {
         testParticipant <- read.table("data/test/subject_test.txt")
         testX <- read.table("data/test/X_test.txt")
         testY <- read.table("data/test/y_test.txt")
-#       load parts of the trainingset
+#load parts of the trainingset
         trainParticipant <- read.table("data/train/subject_train.txt")
         trainX <- read.table("data/train/X_train.txt")
         trainY <- read.table("data/train/y_train.txt")
-#       load the features
+#load the features
         features <- read.table("data/features.txt")
         activityLabels <- read.table("data/activity_labels.txt")
-        
+#combine the participantsets.
         Participants <- rbind(testParticipant, trainParticipant)
         colnames(Participants) <- "Participants"
-        # Merge the test and train labels, applying the textual labels
+# Merge the test and train labels, applying the textual labels
         label <- rbind(testY, trainY)
         label <- merge(label, activityLabels, by=1)[,2]
-        
+#merge test and trainsetX
         data <- rbind(testX, trainX)
         colnames(data) <- features[, 2]
 # Merge all three datasets
         data <- cbind(Participants, label, data)
         library(data.table)
         data <- data.table(data)        #for reasons that I cannot find out, the next steps only work if I use a data.table frame
-        #       5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
-        rm(activityLabels,features,Participants, label,
+rm(activityLabels,features,Participants, label,
            testParticipant,testX,testY,trainParticipant,
            trainX,trainY) #cleaning up the environment.
+#create a tidy dataset (wide) with only variables that contain mean or std in the name.
         library(dplyr)
-        data<-data %>%select(Participants, label, matches("mean|std"))%>% 
-                group_by(Participants, label) %>%
+        data<-data %>%select(Participants, label, matches("mean|std"))%>%  #this selects the variables.
+                group_by(Participants, activity = label) %>%               #this sorts the set 
+                #the next step takes the mean of every variable per participant and activity
                 summarise(tAvgBodyAccelerationX = mean(`tBodyAcc-mean()-X`),tAvgBodyAccelerationY =mean(`tBodyAcc-mean()-Y`),tAvgBodyAccelerationZ =mean(`tBodyAcc-mean()-Z`),
                           tAvgBodyAccelerationSDX =mean(`tBodyAcc-std()-X`),tAvgBodyAccelerationSDY =mean(`tBodyAcc-std()-Y`),tAvgBodyAccelerationSDZ =mean(`tBodyAcc-std()-Z`),
                           tGravityAccX = mean(`tGravityAcc-mean()-X`),tGravityAccY = mean(`tGravityAcc-mean()-Y`),tGravityAccZ = mean(`tGravityAcc-mean()-Z`), 
@@ -70,5 +71,5 @@ run_analysis<-function() {
                           angle_tBodyGyroJerkMeanGravityMean = mean(`angle(tBodyGyroJerkMean,gravityMean)`),
                           angle_GravityMeanX = mean(`angle(X,gravityMean)`), angle_GravityMeanY = mean(`angle(Y,gravityMean)`),angle_GravityMeanZ = mean(`angle(Z,gravityMean)`)
                           )#closing bracket of summarise function 
-                
+          #end of function      
         }
