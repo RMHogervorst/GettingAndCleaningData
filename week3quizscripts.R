@@ -7,6 +7,9 @@ pums<-read.csv("pums.csv")
 #than 10 acres who sold more than $10,000 worth of agriculture products. 
 #Assign that logical vector to the variable agricultureLogical
 agricultureLogical <- c(ACR=3, AGS =6)
+#https://class.coursera.org/getdata-032/forum/thread?thread_id=157
+#myLogicalVector <- X == "apple" 
+#which(myLogicalVector)
 
 library(dplyr)
 head(filter(pums, ACR ==3, AGS ==6),3)

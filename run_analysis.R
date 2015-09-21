@@ -1,5 +1,4 @@
 run_analysis<-function() {
-       library(data.table)
 #      1.  Merges the training and the test sets to create one data set.
 #   load all parts of the testset
         testParticipant <- read.table("data/test/subject_test.txt")
@@ -23,69 +22,53 @@ run_analysis<-function() {
         colnames(data) <- features[, 2]
 # Merge all three datasets
         data <- cbind(Participants, label, data)
-        data <- data.table(data)        
-        
-#       2. Extracts only the measurements on the mean 
-        #and standard deviation for each measurement. 
-        #       3. Uses descriptive activity names to name the activities in the data set
-        #happened in the first steps
-        #       4. Appropriately labels the data set with descriptive variable names. 
-        #        
+        library(data.table)
+        data <- data.table(data)        #for reasons that I cannot find out, the next steps only work if I use a data.table frame
         #       5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
         rm(activityLabels,features,Participants, label,
            testParticipant,testX,testY,trainParticipant,
            trainX,trainY) #cleaning up the environment.
         library(dplyr)
-        data %>%select(data, Participants, label, matches("mean|std"))%>% 
+        data<-data %>%select(Participants, label, matches("mean|std"))%>% 
                 group_by(Participants, label) %>%
-                summarise(mean)%>% #mean of values. 
-                select(
-                   ParticipantNumber = Participants, 
-                   Activity = label,
-                   AveragetBodyAccMean=sum(`tBodyAcc-mean()-X`,`tBodyAcc-mean()-Y`,`tBodyAcc-mean()-Z`)/3,
-                   AveragetBodyAccSTD = sum(`tBodyAcc-std()-X`,`tBodyAcc-std()-Y`,`tBodyAcc-std()-Z`)/3,
-                   AveragetGravityAccMean = sum(`tGravityAcc-mean()-X`,`tGravityAcc-mean()-Y`,`tGravityAcc-mean()-Z`)/3,
-                   AveragetGravityAccSTD = sum(`tGravityAcc-std()-X`,`tGravityAcc-std()-Y`,`tGravityAcc-std()-Z`)/3,
-                   AveragetBodyAccJerkMean = sum(`tBodyAccJerk-mean()-X`,`tBodyAccJerk-mean()-Y`,`tBodyAccJerk-mean()-Z`)/3,
-                   AveragetBodyAccJerkSTD = sum(`tBodyAccJerk-std()-X`,`tBodyAcc-std()-Y`, `tBodyAcc-std()-Z`)/3,
-                   AveragetBodyGyroMean = sum(`tBodyGyro-mean()-X`,`tBodyGyro-mean()-Y`,`tBodyGyro-mean()-Z`)/3,
-                   AveragetBodyGyroSTD = sum(`tBodyGyro-std()-X`,`tBodyGyro-std()-Y`,`tBodyGyro-std()-Z`)/3,
-                   AveragetBodyGyroJerkMean = sum(`tBodyGyroJerk-mean()-X`,`tBodyGyroJerk-mean()-Y`,`tBodyGyroJerk-mean()-Z`)/3,
-                   AveragetBodyGyroJerkSTD = sum(`tBodyGyroJerk-std()-X`,`tBodyGyroJerk-std()-Y`,`tBodyGyroJerk-std()-Z`)/3,
-                   AveragetBodyGyroJerkMagMean =sum(`tBodyGyroJerk-mean()-X`,`tBodyGyroJerk-mean()-Y`,`tBodyGyroJerk-mean()-Z`)/3,
-                   AveragetBodyGyroJerkMagSTD = sum(`tBodyGyroJerk-std()-X`,`tBodyGyroJerk-std()-Y`,`tBodyGyroJerk-std()-Z`)/3,
-                   tBodyAccMagMean = `tBodyAccMag-mean()`,
-                   tBodyAccMagSTD = `tBodyAccMag-std()`,
-                   tBodyAccJerkMagMean =`tBodyAccJerkMag-mean()`,
-                   tBodyAccJerkMagSTD =`tBodyAccJerkMag-std()`,
-                   tBodyGyroJerkMagMean= `tBodyGyroJerkMag-mean()`,
-                   tBodyGyroJerkMagSTD = `tBodyGyroJerkMag-std()`,
-                   AveragefBodyAccMean =sum(`fBodyAcc-mean()-X`,`fBodyAcc-mean()-Y`,`fBodyAcc-mean()-Z`)/3,
-                   AveragefBodyAccSTD = sum(`fBodyAcc-std()-X`,`fBodyAcc-std()-Y`,`fBodyAcc-std()-Z`)/3,
-                   AveragefBodyAccMeanFreq = sum(`fBodyAcc-meanFreq()-X`, `fBodyAcc-meanFreq()-Y`,`fBodyAcc-meanFreq()-Z`)/3,
-                   AveragefBodyAccJerkMean = sum(`fBodyAccJerk-mean()-X`,`fBodyAccJerk-mean()-Y`,`fBodyAccJerk-mean()-Z`)/3,
-                   AveragefBodyAccJerkSTD = sum(`fBodyAccJerk-std()-X`,`fBodyAccJerk-std()-Y`,`fBodyAccJerk-std()-Z`)/3,
-                   fBodyAccMagMean = `fBodyAccMag-mean()`,
-                   fBodyAccMagSTD = `fBodyAccMag-std()`,
-                   fBodyAccJerkMeanFreqMean = sum(`fBodyAccJerk-meanFreq()-X`, `fBodyAccJerk-meanFreq()-Y`,`fBodyAccJerk-meanFreq()-Z`)/3,
-                   fBodyBodyAccJerkMagMEAN =`fBodyBodyAccJerkMag-mean()`,
-                   fBodyBodyAccJerkMagSTD = `fBodyBodyAccJerkMag-std()`,
-                   AveragefBodyGyroMean = sum(`fBodyGyro-mean()-X`,`fBodyGyro-mean()-Y`,`fBodyGyro-mean()-Z`)/3,
-                   AveragefBodyGyroSTD = sum(`fBodyGyro-std()-X`,`fBodyGyro-std()-Y`,`fBodyGyro-std()-Z`)/3,
-                   AveragefBodyGyroMEANFreq = sum(`fBodyGyro-meanFreq()-X`,`fBodyGyro-meanFreq()-Y`, `fBodyGyro-meanFreq()-Z`)/3,                   
-                   fBodyAccMagMeanFreq = `fBodyAccMag-meanFreq()`,                        
-                   BodyBodyAccJerkMagMEANFreq = `fBodyBodyAccJerkMag-meanFreq()`,                    
-                   fBodyBodyGyroMagSTD = `fBodyBodyGyroMag-std()` , 
-                   fBodyBodyGyroMagMEANFreq = `fBodyBodyGyroMag-meanFreq()` ,         
-                   fBodyBodyGyroJerkMagMEAN = `fBodyBodyGyroJerkMag-mean()`,
-                   fBodyBodyGyroJerkMagSTD = `fBodyBodyGyroJerkMag-std()`,
-                   fBodyBodyGyroJerkMagMEANFreq = `fBodyBodyGyroJerkMag-meanFreq()`,      
-                   angletBodyAccMeanGravity =`angle(tBodyAccMean,gravity)`         ,
-                   angletBodyAccJerkMeanGravityMean=`angle(tBodyAccJerkMean),gravityMean)`,
-                   angletBodyGyroMEANGravityMean =`angle(tBodyGyroMean,gravityMean)`,
-                   angletBodyGyroJerkMeanGravityMean =`angle(tBodyGyroJerkMean,gravityMean)`,
-                   AverageangleGravityMean =sum(`angle(X,gravityMean)`,`angle(Y,gravityMean)` ,`angle(Z,gravityMean)`)/3) %>%
+                summarise(tAvgBodyAccelerationX = mean(`tBodyAcc-mean()-X`),tAvgBodyAccelerationY =mean(`tBodyAcc-mean()-Y`),tAvgBodyAccelerationZ =mean(`tBodyAcc-mean()-Z`),
+                          tAvgBodyAccelerationSDX =mean(`tBodyAcc-std()-X`),tAvgBodyAccelerationSDY =mean(`tBodyAcc-std()-Y`),tAvgBodyAccelerationSDZ =mean(`tBodyAcc-std()-Z`),
+                          tGravityAccX = mean(`tGravityAcc-mean()-X`),tGravityAccY = mean(`tGravityAcc-mean()-Y`),tGravityAccZ = mean(`tGravityAcc-mean()-Z`), 
+                          tGravityAccSDX = mean(`tGravityAcc-std()-X`),tGravityAccSDY = mean(`tGravityAcc-std()-Y`),tGravityAccSDZ = mean(`tGravityAcc-std()-Z`),
+                          tBodyAccJerkX = mean(`tBodyAccJerk-mean()-X`),tBodyAccJerkY = mean(`tBodyAccJerk-mean()-Y`),tBodyAccJerkZ = mean(`tBodyAccJerk-mean()-Z`),
+                          tBodyAccJerkSDX = mean(`tBodyAccJerk-std()-X`),tBodyAccJerkSDY = mean(`tBodyAccJerk-std()-Y`),tBodyAccJerkSDZ = mean(`tBodyAccJerk-std()-Z`),
+                          tBodyGyroX = mean(`tBodyGyro-mean()-X`), tBodyGyroY = mean(`tBodyGyro-mean()-Y`),tBodyGyroZ = mean(`tBodyGyro-mean()-Z`),
+                          tBodyGyroSTDX = mean(`tBodyGyro-std()-X`), tBodyGyroSTDY = mean(`tBodyGyro-std()-Y`),tBodyGyroSTDZ = mean(`tBodyGyro-std()-Z`),
+                          tBodyGyroJerkX = mean(`tBodyGyroJerk-mean()-X`),tBodyGyroJerkY = mean(`tBodyGyroJerk-mean()-Y`),tBodyGyroJerkZ = mean(`tBodyGyroJerk-mean()-Z`),
+                          tBodyGyroJerkSDX = mean(`tBodyGyroJerk-std()-X`),tBodyGyroJerkSDY = mean(`tBodyGyroJerk-std()-Y`),tBodyGyroJerkSDZ = mean(`tBodyGyroJerk-std()-Z`),
+                          tBodyAccMag = mean(`tBodyAccMag-mean()`),
+                          tBodyAccMagSD = mean(`tBodyAccMag-std()`),
+                          fBodyAccX = mean(`fBodyAcc-mean()-X`),fBodyAcc = mean(`fBodyAcc-mean()-Y`),fBodyAccZ = mean(`fBodyAcc-mean()-Z`),
+                          fBodyAccSDX = mean(`fBodyAcc-std()-X`),fBodyAccSDY = mean(`fBodyAcc-std()-Y`),fBodyAccSDZ = mean(`fBodyAcc-std()-Z`),
+                          fBodyAccMeanFreqX = mean(`fBodyAcc-meanFreq()-X`),fBodyAccMeanFreqY = mean(`fBodyAcc-meanFreq()-Y`),fBodyAccMeanFreqZ = mean(`fBodyAcc-meanFreq()-Z`),
+                          fBodyAccJerkMeanX = mean(`fBodyAccJerk-mean()-X`),fBodyAccJerkMeanY = mean(`fBodyAccJerk-mean()-Y`),fBodyAccJerkMeanZ = mean(`fBodyAccJerk-mean()-Z`),
+                          fBodyAccJerkSDX = mean(`fBodyAccJerk-std()-X`),fBodyAccJerkSDY = mean(`fBodyAccJerk-std()-Y`),fBodyAccJerkSDZ = mean(`fBodyAccJerk-std()-Z`),
+                          fBodyAccJerkFreqX = mean(`fBodyAccJerk-meanFreq()-X`),fBodyAccJerkFreqY = mean(`fBodyAccJerk-meanFreq()-Y`),fBodyAccJerkFreqZ = mean(`fBodyAccJerk-meanFreq()-Z`),
+                          fBodyGyroMeanX = mean(`fBodyGyro-mean()-X`),fBodyGyroMeanY = mean(`fBodyGyro-mean()-Y`),fBodyGyroMeanZ = mean(`fBodyGyro-mean()-Z`),
+                          fBodyGyroSDX = mean(`fBodyGyro-std()-X`),fBodyGyroSDY = mean(`fBodyGyro-std()-Y`),fBodyGyroSDZ = mean(`fBodyGyro-std()-Z`),
+                          fBodyGyroFreqX = mean(`fBodyGyro-meanFreq()-X`),fBodyGyroFreqY = mean(`fBodyGyro-meanFreq()-Y`),fBodyGyroFreqZ = mean(`fBodyGyro-meanFreq()-Z`),
+                          fBodyAccMag = mean(`fBodyAccMag-mean()`),
+                          fBodyAccMagSD = mean(`fBodyAccMag-std()`),
+                          fBodyAccMagFreq = mean (`fBodyAccMag-meanFreq()`),
+                          fBodyBodyAccJerkMag = mean(`fBodyBodyAccJerkMag-mean()`),
+                          fBodyBodyAccJerkMagSD = mean(`fBodyBodyAccJerkMag-std()`),
+                          fBodyBodyAccJerkMagFreq = mean(`fBodyBodyAccJerkMag-meanFreq()`),
+                          fBodyBodyGyroMag = mean(`fBodyBodyGyroMag-mean()`),
+                          fBodyBodyGyroMagSD = mean(`fBodyBodyGyroMag-std()`),
+                          fBodyBodyGyroMagFreq = mean(`fBodyBodyGyroMag-meanFreq()`),
+                          BodyBodyGyroJerkMag = mean(`fBodyBodyGyroJerkMag-mean()`),
+                          fBodyBodyGyroJerkMagSD = mean(`fBodyBodyGyroJerkMag-std()`),
+                          fBodyBodyGyroJerkMagFreq = mean(`fBodyBodyGyroJerkMag-meanFreq()`),
+                          angle_tBodyAccMeanGravity = mean(`angle(tBodyAccMean,gravity)`),
+                          angle_tBodyAccJerkMeanGravityMean = mean(`angle(tBodyAccJerkMean),gravityMean)`),
+                          angle_tBodyGyroMeanGravityMean = mean(`angle(tBodyGyroMean,gravityMean)`),
+                          angle_tBodyGyroJerkMeanGravityMean = mean(`angle(tBodyGyroJerkMean,gravityMean)`),
+                          angle_GravityMeanX = mean(`angle(X,gravityMean)`), angle_GravityMeanY = mean(`angle(Y,gravityMean)`),angle_GravityMeanZ = mean(`angle(Z,gravityMean)`)
+                          )#closing bracket of summarise function 
                 
-        
-        
         }
