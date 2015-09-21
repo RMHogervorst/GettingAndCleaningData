@@ -6,7 +6,7 @@ Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ort
 ##run_analysis.R
 This repo has the script run_analysis.R. This script requires data.table and dplyr.
 If you have the Samsungdata in your main directory (but still in the folders train/ en test/), 
-*if you have the files loose from the folders, follow this link*, 
+*if you have the files loose from the folders, open the script run_analysis_without_folders which is equal in all respects but looks for the files in your homedirectory*, 
 this script will load the different .txt files and combines them to one dataframe called data. 
 
 After merging of the files the old files will be removed and in 3 steps linked with piping (`%>%`).
